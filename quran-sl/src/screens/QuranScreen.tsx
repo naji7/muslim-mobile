@@ -1,35 +1,42 @@
 import React, { useMemo, useState } from 'react';
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useTheme } from '../theme/ThemeProvider';
 import { useTranslation } from 'react-i18next';
-
-const SURAH_NAMES = [
-	'Al-Fatiha', 'Al-Baqarah', 'Al-Imran', 'An-Nisa', 'Al-Ma’idah', 'Al-An’am', 'Al-A‘raf', 'Al-Anfal', 'At-Tawbah', 'Yunus'
-];
+import { useSurahs } from '../services/quran';
+import { TextInput, List, ActivityIndicator } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 
 export default function QuranScreen() {
 	const { theme } = useTheme();
 	const { t } = useTranslation();
+	const nav = useNavigation<any>();
 	const [q, setQ] = useState('');
-	const filtered = useMemo(() => SURAH_NAMES.filter(s => s.toLowerCase().includes(q.toLowerCase())), [q]);
+	const { data, isLoading } = useSurahs();
+	const filtered = useMemo(() => (data || []).filter(s => `${s.number}. ${s.englishName}`.toLowerCase().includes(q.toLowerCase())), [q, data]);
 	return (
 		<View style={{ flex: 1, backgroundColor: theme.background, padding: 16 }}>
 			<TextInput
 				placeholder={t('searchSurah')}
-				placeholderTextColor={theme.mutedText}
 				value={q}
 				onChangeText={setQ}
-				style={{ borderWidth: 1, borderColor: theme.border, backgroundColor: theme.card, color: theme.text, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 12, marginBottom: 12 }}
+				mode="outlined"
+				left={<TextInput.Icon icon="magnify" />}
 			/>
-			<FlatList
-				data={filtered}
-				keyExtractor={(item, idx) => `${idx}`}
-				renderItem={({ item, index }) => (
-					<TouchableOpacity style={{ paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: theme.border }}>
-						<Text style={{ color: theme.text, fontSize: 16 }}>{index + 1}. {item}</Text>
-					</TouchableOpacity>
-				)}
-			/>
+			{isLoading ? (
+				<ActivityIndicator style={{ marginTop: 16 }} />
+			) : (
+				<FlatList
+					data={filtered}
+					keyExtractor={(item) => String(item.number)}
+					renderItem={({ item }) => (
+						<List.Item
+							title={`${item.number}. ${item.englishName}`}
+							description={`${item.englishNameTranslation} • ${item.revelationType}`}
+							onPress={() => nav.navigate('Surah', { number: item.number, name: item.englishName })}
+						/>
+					)}
+				/>
+			)}
 		</View>
 	);
 }
