@@ -1,21 +1,23 @@
 export const lightTheme = {
 	background: '#FFFFFF',
-	text: '#111827',
+	text: '#0B1B13',
 	mutedText: '#6B7280',
-	primary: '#0ea5e9',
-	card: '#F3F4F6',
-	accent: '#10b981',
-	border: '#E5E7EB',
+	primary: '#16a34a',
+	card: '#F0FDF4',
+	accent: '#22c55e',
+	border: '#DCFCE7',
+	gradient: ['#22c55e', '#16a34a'],
 };
 
 export const darkTheme = {
-	background: '#0B1020',
-	text: '#F9FAFB',
-	mutedText: '#A1A1AA',
-	primary: '#38bdf8',
-	card: '#111827',
+	background: '#07130C',
+	text: '#ECFDF5',
+	mutedText: '#9CA3AF',
+	primary: '#22c55e',
+	card: '#0B1B13',
 	accent: '#34d399',
-	border: '#1F2937',
+	border: '#14532d',
+	gradient: ['#14532d', '#065f46'],
 };
 
 export type Theme = typeof lightTheme;
